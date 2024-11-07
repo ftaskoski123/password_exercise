@@ -10,10 +10,9 @@
         </button>
       </div>
 
-      <button class="strength" @click="showscore = true">Check Strength</button>
+      <button :disabled="!password" class="strength" @click="showscore = true">Check Strength</button>
     </div>
 
-    <!-- score -->
     <div v-if="showscore" class="score-overlay" @click="closescore">
       <div class="score">
         <h2>Your score is:</h2>
@@ -160,6 +159,11 @@ input:focus {
   cursor: pointer;
   font-size: 16px;
   transition: background-color 0.3s ease;
+}
+
+.strength:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .score button:hover {

@@ -3,19 +3,34 @@
     <div class="card">
       <h1>Please Enter Your Password</h1>
       <div class="input-container">
-        <input :type="showPassword ? 'text' : 'password'" placeholder="Password" v-model="password" />
+        <input
+          :type="showPassword ? 'text' : 'password'"
+          placeholder="Password"
+          v-model="password"
+        />
         <button class="toggle-password" @click="showPassword = !showPassword">
-          <img v-if="showPassword" src="./svgs/eye_hide_password.svg" alt="Toggle Password Visibility" />
-          <img v-else src="./svgs/eye_show_password.svg" alt="Toggle Password Visibility" />
+          <img
+            v-if="showPassword"
+            src="./svgs/eye_hide_password.svg"
+            alt="Toggle Password Visibility"
+          />
+          <img
+            v-else
+            src="./svgs/eye_show_password.svg"
+            alt="Toggle Password Visibility"
+          />
         </button>
       </div>
 
-      <button :disabled="!password" class="strength" @click="showscore = true">Check Strength</button>
+      <button :disabled="!password" class="strength" @click="showscore = true">
+        Check Strength
+      </button>
     </div>
 
-    <div v-if="showscore" class="score-overlay" @click="closescore">
+    <div v-if="showscore" class="score-container" @click="closescore">
       <div class="score">
-        <h2>Your score is:</h2>
+        <h2>Your score is: {{ score }}</h2>
+        <p>{{ feedback }}</p>
         <button @click="closescore">Close</button>
       </div>
     </div>
@@ -23,15 +38,70 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from "vue";
 
-const password = ref<string>('');
+const password = ref<string>("");
 const showPassword = ref<boolean>(false);
 const showscore = ref<boolean>(false);
 
 const closescore = () => {
   showscore.value = false;
+  password.value = "";
 };
+
+const commonPasswords = ["password", "12345", "qwerty", "admin"];
+
+const score = computed(() => {
+  let sum = 0;
+
+  if (password.value.length >= 12) {
+    sum += 3;
+  } else {
+    sum += 2;
+  }
+
+  if (/[a-z]/.test(password.value)){
+
+    sum += 1; 
+  }
+
+  if (/[A-Z]/.test(password.value)){
+
+    sum += 1; 
+  } 
+
+  if (/[0-9]/.test(password.value)) {
+    sum += 2;
+  }
+
+  if (/[^A-Za-z0-9]/.test(password.value)){
+
+    sum += 2;
+  } 
+
+  if (!commonPasswords.includes(password.value.toLowerCase())) {
+
+    sum += 1;
+  }
+
+  return sum;
+});
+
+const feedback = computed(() => {
+  if (score.value <= 3){
+
+    return "Weak password. Try adding more characters and using a mix of symbols.";
+  }
+  if (score.value > 3 && score.value <= 6){
+
+    return "Moderate password. Consider adding more length, symbols, and uppercase characters.";
+  }
+  if (score.value > 6 && score.value < 9){
+
+    return "Strong password. Almost there!";
+  }
+  return "Excellent password!";
+});
 </script>
 
 <style scoped>
@@ -86,7 +156,7 @@ input:focus {
   outline: none;
   background-color: #fff;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  border: 1px solid #4A90E2;
+  border: 1px solid #4a90e2;
 }
 
 .toggle-password {
@@ -106,7 +176,7 @@ input:focus {
 .strength {
   margin-top: 20px;
   padding: 12px 24px;
-  background: linear-gradient(45deg, #4A90E2, #56CCF2);
+  background: linear-gradient(45deg, #4a90e2, #56ccf2);
   color: white;
   border: none;
   border-radius: 6px;
@@ -122,13 +192,13 @@ input:focus {
   transform: translateY(-5px);
 }
 
-.score-overlay {
+.score-container {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); 
+  background-color: rgba(0, 0, 0, 0.5);
   z-index: 100;
   display: flex;
   justify-content: center;
@@ -152,7 +222,7 @@ input:focus {
 
 .score button {
   padding: 10px 20px;
-  background-color: #4A90E2;
+  background-color: #4a90e2;
   color: white;
   border: none;
   border-radius: 6px;
@@ -167,7 +237,7 @@ input:focus {
 }
 
 .score button:hover {
-  background-color: #56CCF2;
+  background-color: #56ccf2;
 }
 
 @keyframes slideDown {
